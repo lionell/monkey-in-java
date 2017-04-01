@@ -91,7 +91,7 @@ public class Lexer {
     return t;
   }
 
-  public void readChar() {
+  private void readChar() {
     if (readPosition >= input.length()) {
       ch = 0;
     } else {
@@ -101,7 +101,7 @@ public class Lexer {
     readPosition += 1;
   }
 
-  public char peekChar() {
+  private char peekChar() {
     if (readPosition >= input.length()) {
       return 0;
     } else {
@@ -109,7 +109,7 @@ public class Lexer {
     }
   }
 
-  public String readIdentifier() {
+  private String readIdentifier() {
     int start = position;
     while (isLetter(ch)) {
       readChar();
@@ -117,11 +117,11 @@ public class Lexer {
     return input.substring(start, position);
   }
 
-  public boolean isLetter(char ch) {
+  private boolean isLetter(char ch) {
     return Character.isLetter(ch) || ch == '_';
   }
 
-  public String readNumber() {
+  private String readNumber() {
     int start = position;
     while (Character.isDigit(ch)) {
       readChar();
@@ -129,7 +129,7 @@ public class Lexer {
     return input.substring(start, position);
   }
 
-  public void skipWhitespace() {
+  private void skipWhitespace() {
     while (Character.isWhitespace(ch)) {
       readChar();
     }
