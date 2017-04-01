@@ -1,0 +1,6 @@
+# Created by https://www.gitignore.io/api/bazel
+
+### Bazel ###
+/bazel-*
+
+# End of https://www.gitignore.io/api/bazel
