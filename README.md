@@ -1,7 +1,11 @@
 # Java lang syntax analyzer
 
-## TODO:
+## How to use
 
-- [ ] Are we going to use something except Java?
-   If yes, then we need to use build system(Bazel?).
-- [ ] Write next TODO items.
+To run REPL just type `bazel run //java/monkey`
+
+To run tests type `bazel test //javatests/monkey/...`
+
+## License
+
+MIT License
