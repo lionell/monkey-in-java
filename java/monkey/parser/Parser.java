@@ -21,6 +21,7 @@ import monkey.ast.Identifier;
 import monkey.ast.IntegerLiteral;
 import monkey.ast.PrefixExpression;
 import monkey.ast.InfixExpression;
+import monkey.ast.Bool;
 
 public class Parser {
   private Lexer lexer;
@@ -40,6 +41,8 @@ public class Parser {
     registerPrefix(Token.Type.INT, this::parseIntegerLiteral);
     registerPrefix(Token.Type.BANG, this::parsePrefixExpression);
     registerPrefix(Token.Type.MINUS, this::parsePrefixExpression);
+    registerPrefix(Token.Type.TRUE, this::parseBool);
+    registerPrefix(Token.Type.FALSE, this::parseBool);
 
     infixParseFns = new HashMap<>();
     registerInfix(Token.Type.PLUS, this::parseInfixExpression);
@@ -51,6 +54,10 @@ public class Parser {
     registerInfix(Token.Type.LT, this::parseInfixExpression);
     registerInfix(Token.Type.GT, this::parseInfixExpression);
     errors = new ArrayList<>();
+  }
+
+  private Expression parseBool() {
+    return new Bool(curToken, curTokenIs(Token.Type.TRUE));
   }
 
   private Expression parseInfixExpression(Expression left) {
@@ -75,10 +82,9 @@ public class Parser {
   }
 
   private Expression parseIntegerLiteral() {
-    Token token = curToken;
     long value = Long.parseLong(curToken.getLiteral());
     // TODO: Check for parsing errors
-    return new IntegerLiteral(token, value);
+    return new IntegerLiteral(curToken, value);
   }
 
   private Expression parseIdentifier() {

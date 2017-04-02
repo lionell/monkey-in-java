@@ -97,7 +97,7 @@ public class TestParser {
     "true;, true",
     "false;, false"
   })
-  public void testBoolExperssion(String input, Boolean value) {
+  public void testBoolExpression(String input, Boolean value) {
     Parser p = new Parser(new Lexer(input));
 
     Program program = p.parseProgram();
@@ -113,7 +113,7 @@ public class TestParser {
     "-10;, -, 10",
     "!5;, !, 5"
   })
-  public void testPrefixExpression(String input, String operator, Long right) {
+  public void testPrefixExpressionWithIntegerLiterals(String input, String operator, Long right) {
     Parser p = new Parser(new Lexer(input));
 
     Program program = p.parseProgram();
@@ -124,6 +124,24 @@ public class TestParser {
 
     assertThat(pe.getOperator()).isEqualTo(operator);
     assertIntegerLiteral(pe.getRight(), right);
+  }
+
+  @Test
+  @Parameters({
+    "!true;, !, true",
+    "!false;, !, false"
+  })
+  public void testPrefixExpressionWithBools(String input, String operator, Boolean right) {
+    Parser p = new Parser(new Lexer(input));
+
+    Program program = p.parseProgram();
+    assertThat(p.getErrors()).isEmpty();
+
+    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
+    PrefixExpression pe = (PrefixExpression)es.getExpression();
+
+    assertThat(pe.getOperator()).isEqualTo(operator);
+    assertBool(pe.getRight(), right);
   }
 
   @Test
@@ -180,6 +198,8 @@ public class TestParser {
       assertIntegerLiteral(exp, (Long)value);
     } else if (value instanceof String) {
       assertIdentifier(exp, (String)value);
+    } else if (value instanceof Boolean) {
+      assertBool(exp, (Boolean)value);
     }
   }
 
