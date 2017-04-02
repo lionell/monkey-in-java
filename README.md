@@ -1,4 +1,6 @@
-# Java lang syntax analyzer
+# Monkey language in Java
+
+[![Build Status](https://travis-ci.org/lionell/syntax-analyzer.svg?branch=master)](https://travis-ci.org/lionell/syntax-analyzer)
 
 ## How to use
 
