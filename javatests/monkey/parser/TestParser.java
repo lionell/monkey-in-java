@@ -20,6 +20,7 @@ import monkey.ast.Identifier;
 import monkey.ast.IntegerLiteral;
 import monkey.ast.PrefixExpression;
 import monkey.ast.InfixExpression;
+import monkey.ast.Bool;
 
 @RunWith(JUnitParamsRunner.class)
 public class TestParser {
@@ -33,9 +34,8 @@ public class TestParser {
 
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
-    assertThat(program.getStatements().size()).isEqualTo(1);
 
-    Statement s = program.getStatements().get(0);
+    Statement s = extractTheOnlyOneStatement(program);
 
     assertThat(s.tokenLiteral()).isEqualTo("let");
     LetStatement ls = (LetStatement)s;
@@ -53,11 +53,11 @@ public class TestParser {
 
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
-    assertThat(program.getStatements().size()).isEqualTo(1);
 
-    ReturnStatement rs = (ReturnStatement)program.getStatements().get(0);
+    ReturnStatement rs = (ReturnStatement)extractTheOnlyOneStatement(program);
 
     assertThat(rs.tokenLiteral()).isEqualTo("return");
+    // TODO: Test identifier
   }
 
   @Test
@@ -65,14 +65,13 @@ public class TestParser {
     "x;, x",
     "foobar;, foobar"
   })
-  public void assertIdentifierExpression(String input, String value) {
+  public void testIdentfierExpression(String input, String value) {
     Parser p = new Parser(new Lexer(input));
 
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
-    assertThat(program.getStatements().size()).isEqualTo(1);
 
-    ExpressionStatement es = (ExpressionStatement)program.getStatements().get(0);
+    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
 
     assertIdentifier(es.getExpression(), value);
   }
@@ -82,16 +81,31 @@ public class TestParser {
     "5;, 5",
     "10;, 10"
   })
-  public void assertIntegerLiteralExpression(String input, Long value) {
+  public void testIntegerLiteralExpression(String input, Long value) {
     Parser p = new Parser(new Lexer(input));
 
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
-    assertThat(program.getStatements().size()).isEqualTo(1);
 
-    ExpressionStatement es = (ExpressionStatement)program.getStatements().get(0);
+    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
 
     assertIntegerLiteral(es.getExpression(), value);
+  }
+
+  @Test
+  @Parameters({
+    "true;, true",
+    "false;, false"
+  })
+  public void testBoolExperssion(String input, Boolean value) {
+    Parser p = new Parser(new Lexer(input));
+
+    Program program = p.parseProgram();
+    assertThat(p.getErrors()).isEmpty();
+
+    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
+
+    assertBool(es.getExpression(), value);
   }
 
   @Test
@@ -104,9 +118,8 @@ public class TestParser {
 
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
-    assertThat(program.getStatements().size()).isEqualTo(1);
 
-    ExpressionStatement es = (ExpressionStatement)program.getStatements().get(0);
+    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
     PrefixExpression pe = (PrefixExpression)es.getExpression();
 
     assertThat(pe.getOperator()).isEqualTo(operator);
@@ -124,9 +137,8 @@ public class TestParser {
 
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
-    assertThat(program.getStatements().size()).isEqualTo(1);
 
-    ExpressionStatement es = (ExpressionStatement)program.getStatements().get(0);
+    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
     InfixExpression ie = (InfixExpression)es.getExpression();
 
     assertInfixExpression(ie, left, operator, right);
@@ -171,6 +183,14 @@ public class TestParser {
     }
   }
 
+  private void assertBool(Expression exp, Boolean value) {
+    assertThat(exp).isInstanceOf(Bool.class);
+    Bool b = (Bool)exp;
+
+    assertThat(b.tokenLiteral()).isEqualTo(Boolean.toString(value));
+    assertThat(b.getValue()).isEqualTo(value);
+  }
+
   private void assertIntegerLiteral(Expression exp, Long value) {
     assertThat(exp).isInstanceOf(IntegerLiteral.class);
     IntegerLiteral il = (IntegerLiteral)exp;
@@ -185,5 +205,10 @@ public class TestParser {
 
     assertThat(id.tokenLiteral()).isEqualTo(value);
     assertThat(id.getValue()).isEqualTo(value);
+  }
+
+  private Statement extractTheOnlyOneStatement(Program p) {
+    assertThat(p.getStatements().size()).isEqualTo(1);
+    return p.getStatements().get(0);
   }
 }
