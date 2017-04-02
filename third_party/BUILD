@@ -13,3 +13,17 @@ java_library(
         "@junit4//jar",
     ],
 )
+
+java_library(
+    name = "truth",
+    exports = [
+        "@truth//jar",
+    ],
+)
+
+java_library(
+    name = "junitparams",
+    exports = [
+        "@junitparams//jar",
+    ],
+)

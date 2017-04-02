@@ -4,10 +4,11 @@ java_test(
     size = "small",
     test_class = "monkey.parser.TestParser",
     deps = [
-        "//java/monkey/token",
         "//java/monkey/lexer",
         "//java/monkey/ast",
         "//java/monkey/parser",
         "//third_party:junit4",
+        "//third_party:truth",
+        "//third_party:junitparams",
     ],
 )

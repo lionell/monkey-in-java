@@ -1,15 +1,15 @@
 package monkey.ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Program implements Node {
-  private ArrayList<Statement> statements;
+  private List<Statement> statements;
 
-  public Program(ArrayList<Statement> statements) {
+  public Program(List<Statement> statements) {
     this.statements = statements;
   }
 
-  public ArrayList<Statement> getStatements() {
+  public List<Statement> getStatements() {
     return statements;
   }
 
@@ -20,5 +20,14 @@ public class Program implements Node {
     } else {
       return "";
     }
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Statement st : statements) {
+      sb.append(st.toString());
+    }
+    return sb.toString();
   }
 }

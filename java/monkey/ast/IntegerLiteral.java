@@ -2,16 +2,16 @@ package monkey.ast;
 
 import monkey.token.Token;
 
-public class Identifier implements Expression {
-  private Token token; // Token.Type.IDENT
-  private String value;
+public class IntegerLiteral implements Expression {
+  private Token token;
+  private long value;
 
-  public Identifier(Token token, String value) {
+  public IntegerLiteral(Token token, long value) {
     this.token = token;
     this.value = value;
   }
 
-  public String getValue() {
+  public long getValue() {
     return value;
   }
 
@@ -22,6 +22,6 @@ public class Identifier implements Expression {
 
   @Override
   public String toString() {
-    return value;
+    return Long.toString(value);
   }
 }

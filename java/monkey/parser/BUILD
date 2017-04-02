@@ -7,6 +7,7 @@ java_library(
         "//java/monkey/token",
         "//java/monkey/lexer",
         "//java/monkey/ast",
+        "//third_party:guava",
     ],
 )
 

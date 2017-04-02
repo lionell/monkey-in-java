@@ -1,9 +1,10 @@
 java_test(
-    name = "lexer",
-    srcs = ["TestLexer.java"],
+    name = "ast",
+    srcs = ["TestAst.java"],
     size = "small",
-    test_class = "monkey.lexer.TestLexer",
+    test_class = "monkey.ast.TestAst",
     deps = [
+        "//java/monkey/ast",
         "//java/monkey/lexer",
         "//java/monkey/token",
         "//third_party:junit4",

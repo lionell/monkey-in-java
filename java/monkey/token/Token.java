@@ -1,5 +1,7 @@
 package monkey.token;
 
+import java.util.Map;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.base.MoreObjects;
 
@@ -72,7 +74,7 @@ public class Token {
     ELSE,
     RETURN;
 
-    private static final ImmutableMap<String, Type> keywords = ImmutableMap.<String, Type>builder()
+    private static final Map<String, Type> keywords = ImmutableMap.<String, Type>builder()
         .put("fn", FUNCTION)
         .put("let", LET)
         .put("true", TRUE)
