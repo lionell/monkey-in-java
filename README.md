@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/lionell/syntax-analyzer.svg?branch=master)](https://travis-ci.org/lionell/syntax-analyzer)
 
-![Monkey](http://tinyclipart.com/resource/monkey-cartoon/monkey-cartoon-142.jpg)
+<div align="center">
+  <img width="300px" src="http://tinyclipart.com/resource/monkey-cartoon/monkey-cartoon-142.jpg" />
+</div>
 
 ## How to use
 
