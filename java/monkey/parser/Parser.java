@@ -43,6 +43,7 @@ public class Parser {
     registerPrefix(Token.Type.MINUS, this::parsePrefixExpression);
     registerPrefix(Token.Type.TRUE, this::parseBool);
     registerPrefix(Token.Type.FALSE, this::parseBool);
+    registerPrefix(Token.Type.LPAREN, this::parseGroupedExpression);
 
     infixParseFns = new HashMap<>();
     registerInfix(Token.Type.PLUS, this::parseInfixExpression);
@@ -54,6 +55,16 @@ public class Parser {
     registerInfix(Token.Type.LT, this::parseInfixExpression);
     registerInfix(Token.Type.GT, this::parseInfixExpression);
     errors = new ArrayList<>();
+  }
+
+  private Expression parseGroupedExpression() {
+    nextToken();
+    Expression e = parseExpression(Precedence.LOWEST);
+
+    if (!expectPeek(Token.Type.RPAREN)) {
+      return null;
+    }
+    return e;
   }
 
   private Expression parseBool() {
@@ -133,6 +144,44 @@ public class Parser {
     }
 
     return leftExp;
+  }
+
+  private enum Precedence {
+    LOWEST,
+    EQUALS, // ==
+    LESSGREATER, // > or <
+    SUM, // +
+    PRODUCT, // *
+    PREFIX, // -x or !x
+    CALL; // myFunction(x)
+  }
+
+  private static final Map<Token.Type, Precedence> precedences =
+    ImmutableMap.<Token.Type, Precedence>builder()
+    .put(Token.Type.EQ, Precedence.EQUALS)
+    .put(Token.Type.NOT_EQ, Precedence.EQUALS)
+    .put(Token.Type.LT, Precedence.LESSGREATER)
+    .put(Token.Type.GT, Precedence.LESSGREATER)
+    .put(Token.Type.PLUS, Precedence.SUM)
+    .put(Token.Type.MINUS, Precedence.SUM)
+    .put(Token.Type.SLASH, Precedence.PRODUCT)
+    .put(Token.Type.ASTERISK, Precedence.PRODUCT)
+    .build();
+
+  private Precedence peekPrecedence() {
+    Precedence p = precedences.get(peekToken.getType());
+    if (p != null) {
+      return p;
+    }
+    return Precedence.LOWEST;
+  }
+
+  private Precedence curPrecedence() {
+    Precedence p = precedences.get(curToken.getType());
+    if (p != null) {
+      return p;
+    }
+    return Precedence.LOWEST;
   }
 
   private ExpressionStatement parseExpressionStatement() {
@@ -215,43 +264,5 @@ public class Parser {
 
   public List<String> getErrors() {
     return errors;
-  }
-
-  private enum Precedence {
-    LOWEST,
-    EQUALS, // ==
-    LESSGREATER, // > or <
-    SUM, // +
-    PRODUCT, // *
-    PREFIX, // -x or !x
-    CALL; // myFunction(x)
-  }
-
-  private static final Map<Token.Type, Precedence> precedences =
-    ImmutableMap.<Token.Type, Precedence>builder()
-    .put(Token.Type.EQ, Precedence.EQUALS)
-    .put(Token.Type.NOT_EQ, Precedence.EQUALS)
-    .put(Token.Type.LT, Precedence.LESSGREATER)
-    .put(Token.Type.GT, Precedence.LESSGREATER)
-    .put(Token.Type.PLUS, Precedence.SUM)
-    .put(Token.Type.MINUS, Precedence.SUM)
-    .put(Token.Type.SLASH, Precedence.PRODUCT)
-    .put(Token.Type.ASTERISK, Precedence.PRODUCT)
-    .build();
-
-  private Precedence peekPrecedence() {
-    Precedence p = precedences.get(peekToken.getType());
-    if (p != null) {
-      return p;
-    }
-    return Precedence.LOWEST;
-  }
-
-  private Precedence curPrecedence() {
-    Precedence p = precedences.get(curToken.getType());
-    if (p != null) {
-      return p;
-    }
-    return Precedence.LOWEST;
   }
 }

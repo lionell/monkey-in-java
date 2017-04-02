@@ -27,7 +27,7 @@ public class TestParser {
   @Test
   @Parameters({
     "let x = 5;, x",
-    "let foobar = 1234;, foobar"
+    "let foobar = 1234;, foobar",
   })
   public void testLetStatement(String input, String name) {
     Parser p = new Parser(new Lexer(input));
@@ -46,7 +46,7 @@ public class TestParser {
   @Test
   @Parameters({
     "return 5;",
-    "return 1234;"
+    "return 1234;",
   })
   public void testReturnStatement(String input) {
     Parser p = new Parser(new Lexer(input));
@@ -63,7 +63,7 @@ public class TestParser {
   @Test
   @Parameters({
     "x;, x",
-    "foobar;, foobar"
+    "foobar;, foobar",
   })
   public void testIdentfierExpression(String input, String value) {
     Parser p = new Parser(new Lexer(input));
@@ -79,7 +79,7 @@ public class TestParser {
   @Test
   @Parameters({
     "5;, 5",
-    "10;, 10"
+    "10;, 10",
   })
   public void testIntegerLiteralExpression(String input, Long value) {
     Parser p = new Parser(new Lexer(input));
@@ -95,7 +95,7 @@ public class TestParser {
   @Test
   @Parameters({
     "true;, true",
-    "false;, false"
+    "false;, false",
   })
   public void testBoolExpression(String input, Boolean value) {
     Parser p = new Parser(new Lexer(input));
@@ -111,7 +111,7 @@ public class TestParser {
   @Test
   @Parameters({
     "-10;, -, 10",
-    "!5;, !, 5"
+    "!5;, !, 5",
   })
   public void testPrefixExpressionWithIntegerLiterals(String input, String operator, Long right) {
     Parser p = new Parser(new Lexer(input));
@@ -129,7 +129,7 @@ public class TestParser {
   @Test
   @Parameters({
     "!true;, !, true",
-    "!false;, !, false"
+    "!false;, !, false",
   })
   public void testPrefixExpressionWithBools(String input, String operator, Boolean right) {
     Parser p = new Parser(new Lexer(input));
@@ -147,7 +147,7 @@ public class TestParser {
   @Test
   @Parameters({
     "5 + 5;, 5, +, 5",
-    "10 + 123;, 10, +, 123"
+    "10 + 123;, 10, +, 123",
   })
   public void testInfixExpression(String input, Long left, String operator, Long right) {
     Lexer l = new Lexer(input);
@@ -175,6 +175,11 @@ public class TestParser {
     "5 > 4 == 3 < 4, ((5 > 4) == (3 < 4))",
     "5 > 4 != 3 < 4, ((5 > 4) != (3 < 4))",
     "3 + 4 * 5 == 3 * 1 + 4 * 5, ((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))",
+    "1 + (2 + 3) + 4, ((1 + (2 + 3)) + 4)",
+    "(5 + 5) * 2, ((5 + 5) * 2)",
+    "2 / (5 + 5), (2 / (5 + 5))",
+    "-(5 + 5), (-(5 + 5))",
+    "!(true == true), (!(true == true))",
   })
   public void testOperatorPrecedence(String input, String expected) {
     Parser p = new Parser(new Lexer(input));
