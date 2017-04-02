@@ -1,3 +1,4 @@
+language: java
 dist: trusty
 
 addons:
@@ -16,4 +17,3 @@ before_install:
 
 script:
   - bazel test //javatests/monkey/...
-
