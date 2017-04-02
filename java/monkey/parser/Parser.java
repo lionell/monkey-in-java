@@ -119,7 +119,7 @@ public class Parser {
     while (!peekTokenIs(Token.Type.SEMICOLON) && precedence.compareTo(peekPrecedence()) < 0) {
       Function<Expression, Expression> infix = infixParseFns.get(peekToken.getType());
       if (infix == null) {
-        return leftExp;
+        break;
       }
 
       nextToken();

@@ -12,6 +12,7 @@ import monkey.lexer.Lexer;
 import monkey.parser.Parser;
 import monkey.ast.Program;
 import monkey.ast.Statement;
+import monkey.ast.Expression;
 import monkey.ast.LetStatement;
 import monkey.ast.ReturnStatement;
 import monkey.ast.ExpressionStatement;
@@ -39,6 +40,7 @@ public class TestParser {
     assertThat(s.tokenLiteral()).isEqualTo("let");
     LetStatement ls = (LetStatement)s;
     assertThat(ls.getName().tokenLiteral()).isEqualTo(name);
+    // TODO: Test identifier
   }
 
   @Test
@@ -63,7 +65,7 @@ public class TestParser {
     "x;, x",
     "foobar;, foobar"
   })
-  public void testIdentifierExpression(String input, String value) {
+  public void assertIdentifierExpression(String input, String value) {
     Parser p = new Parser(new Lexer(input));
 
     Program program = p.parseProgram();
@@ -71,9 +73,8 @@ public class TestParser {
     assertThat(program.getStatements().size()).isEqualTo(1);
 
     ExpressionStatement es = (ExpressionStatement)program.getStatements().get(0);
-    Identifier id = (Identifier)es.getExpression();
 
-    assertThat(id.getValue()).isEqualTo(value);
+    assertIdentifier(es.getExpression(), value);
   }
 
   @Test
@@ -81,7 +82,7 @@ public class TestParser {
     "5;, 5",
     "10;, 10"
   })
-  public void testIntegerLiteralExpression(String input, Long value) {
+  public void assertIntegerLiteralExpression(String input, Long value) {
     Parser p = new Parser(new Lexer(input));
 
     Program program = p.parseProgram();
@@ -89,9 +90,8 @@ public class TestParser {
     assertThat(program.getStatements().size()).isEqualTo(1);
 
     ExpressionStatement es = (ExpressionStatement)program.getStatements().get(0);
-    IntegerLiteral il = (IntegerLiteral)es.getExpression();
 
-    assertThat(il.getValue()).isEqualTo(value);
+    assertIntegerLiteral(es.getExpression(), value);
   }
 
   @Test
@@ -110,8 +110,7 @@ public class TestParser {
     PrefixExpression pe = (PrefixExpression)es.getExpression();
 
     assertThat(pe.getOperator()).isEqualTo(operator);
-    IntegerLiteral il = (IntegerLiteral)pe.getRight();
-    assertThat(il.getValue()).isEqualTo(right);
+    assertIntegerLiteral(pe.getRight(), right);
   }
 
   @Test
@@ -130,11 +129,7 @@ public class TestParser {
     ExpressionStatement es = (ExpressionStatement)program.getStatements().get(0);
     InfixExpression ie = (InfixExpression)es.getExpression();
 
-    assertThat(ie.getOperator()).isEqualTo(operator);
-    IntegerLiteral il = (IntegerLiteral)ie.getLeft();
-    assertThat(il.getValue()).isEqualTo(left);
-    il = (IntegerLiteral)ie.getRight();
-    assertThat(il.getValue()).isEqualTo(right);
+    assertInfixExpression(ie, left, operator, right);
   }
 
   @Test
@@ -149,6 +144,7 @@ public class TestParser {
     "3 + 4; -5 * 5, (3 + 4)((-5) * 5)",
     "5 > 4 == 3 < 4, ((5 > 4) == (3 < 4))",
     "5 > 4 != 3 < 4, ((5 > 4) != (3 < 4))",
+    "3 + 4 * 5 == 3 * 1 + 4 * 5, ((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))",
   })
   public void testOperatorPrecedence(String input, String expected) {
     Parser p = new Parser(new Lexer(input));
@@ -156,5 +152,38 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
     assertThat(program.toString()).isEqualTo(expected);
+  }
+
+  private void assertInfixExpression(Expression exp, Object left, String operator, Object right) {
+    assertThat(exp).isInstanceOf(InfixExpression.class);
+    InfixExpression ie = (InfixExpression)exp;
+
+    assertThat(ie.getOperator()).isEqualTo(operator);
+    assertLiteralExpression(ie.getLeft(), left);
+    assertLiteralExpression(ie.getRight(), right);
+  }
+
+  private void assertLiteralExpression(Expression exp, Object value) {
+    if (value instanceof Long) {
+      assertIntegerLiteral(exp, (Long)value);
+    } else if (value instanceof String) {
+      assertIdentifier(exp, (String)value);
+    }
+  }
+
+  private void assertIntegerLiteral(Expression exp, Long value) {
+    assertThat(exp).isInstanceOf(IntegerLiteral.class);
+    IntegerLiteral il = (IntegerLiteral)exp;
+
+    assertThat(il.tokenLiteral()).isEqualTo(Long.toString(value));
+    assertThat(il.getValue()).isEqualTo(value);
+  }
+
+  private void assertIdentifier(Expression exp, String value) {
+    assertThat(exp).isInstanceOf(Identifier.class);
+    Identifier id = (Identifier)exp;
+
+    assertThat(id.tokenLiteral()).isEqualTo(value);
+    assertThat(id.getValue()).isEqualTo(value);
   }
 }
