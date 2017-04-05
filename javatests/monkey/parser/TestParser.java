@@ -21,6 +21,8 @@ import monkey.ast.IntegerLiteral;
 import monkey.ast.PrefixExpression;
 import monkey.ast.InfixExpression;
 import monkey.ast.Bool;
+import monkey.ast.IfExpression;
+import monkey.ast.BlockStatement;
 
 @RunWith(JUnitParamsRunner.class)
 public class TestParser {
@@ -35,12 +37,18 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
 
-    Statement s = extractTheOnlyOneStatement(program);
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(LetStatement.class);
+    LetStatement ls = (LetStatement)st;
 
-    assertThat(s.tokenLiteral()).isEqualTo("let");
-    LetStatement ls = (LetStatement)s;
+    assertThat(ls.tokenLiteral()).isEqualTo("let");
     assertThat(ls.getName().tokenLiteral()).isEqualTo(name);
     // TODO: Test identifier
+  }
+
+  private Statement extractTheOnlyOneStatement(Program p) {
+    assertThat(p.getStatements().size()).isEqualTo(1);
+    return p.getStatements().get(0);
   }
 
   @Test
@@ -54,7 +62,9 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
 
-    ReturnStatement rs = (ReturnStatement)extractTheOnlyOneStatement(program);
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(ReturnStatement.class);
+    ReturnStatement rs = (ReturnStatement)st;
 
     assertThat(rs.tokenLiteral()).isEqualTo("return");
     // TODO: Test identifier
@@ -71,9 +81,19 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
 
-    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    ExpressionStatement es = (ExpressionStatement)st;
 
     assertIdentifier(es.getExpression(), value);
+  }
+
+  private void assertIdentifier(Expression exp, String value) {
+    assertThat(exp).isInstanceOf(Identifier.class);
+    Identifier id = (Identifier)exp;
+
+    assertThat(id.tokenLiteral()).isEqualTo(value);
+    assertThat(id.getValue()).isEqualTo(value);
   }
 
   @Test
@@ -87,9 +107,19 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
 
-    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    ExpressionStatement es = (ExpressionStatement)st;
 
     assertIntegerLiteral(es.getExpression(), value);
+  }
+
+  private void assertIntegerLiteral(Expression exp, Long value) {
+    assertThat(exp).isInstanceOf(IntegerLiteral.class);
+    IntegerLiteral il = (IntegerLiteral)exp;
+
+    assertThat(il.tokenLiteral()).isEqualTo(Long.toString(value));
+    assertThat(il.getValue()).isEqualTo(value);
   }
 
   @Test
@@ -103,9 +133,19 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
 
-    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    ExpressionStatement es = (ExpressionStatement)st;
 
     assertBool(es.getExpression(), value);
+  }
+
+  private void assertBool(Expression exp, Boolean value) {
+    assertThat(exp).isInstanceOf(Bool.class);
+    Bool b = (Bool)exp;
+
+    assertThat(b.tokenLiteral()).isEqualTo(Boolean.toString(value));
+    assertThat(b.getValue()).isEqualTo(value);
   }
 
   @Test
@@ -119,7 +159,10 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
 
-    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    ExpressionStatement es = (ExpressionStatement)st;
+    assertThat(es.getExpression()).isInstanceOf(PrefixExpression.class);
     PrefixExpression pe = (PrefixExpression)es.getExpression();
 
     assertThat(pe.getOperator()).isEqualTo(operator);
@@ -137,7 +180,10 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
 
-    ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    ExpressionStatement es = (ExpressionStatement)st;
+    assertThat(es.getExpression()).isInstanceOf(PrefixExpression.class);
     PrefixExpression pe = (PrefixExpression)es.getExpression();
 
     assertThat(pe.getOperator()).isEqualTo(operator);
@@ -150,13 +196,13 @@ public class TestParser {
     "10 + 123;, 10, +, 123",
   })
   public void testInfixExpression(String input, Long left, String operator, Long right) {
-    Lexer l = new Lexer(input);
-    Parser p = new Parser(l);
+    Parser p = new Parser(new Lexer(input));
 
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
 
     ExpressionStatement es = (ExpressionStatement)extractTheOnlyOneStatement(program);
+    assertThat(es.getExpression()).isInstanceOf(InfixExpression.class);
     InfixExpression ie = (InfixExpression)es.getExpression();
 
     assertInfixExpression(ie, left, operator, right);
@@ -189,6 +235,57 @@ public class TestParser {
     assertThat(program.toString()).isEqualTo(expected);
   }
 
+  @Test
+  public void testIfExpression() {
+    String input = "if (x < y) { x }";
+    Parser p = new Parser(new Lexer(input));
+
+    Program program = p.parseProgram();
+    assertThat(p.getErrors()).isEmpty();
+
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    ExpressionStatement es = (ExpressionStatement)st;
+    assertThat(es.getExpression()).isInstanceOf(IfExpression.class);
+    IfExpression ie = (IfExpression)es.getExpression();
+    assertInfixExpression(ie.getCondition(), "x", "<", "y");
+    BlockStatement bs = ie.getConsequence();
+    assertThat(bs.getStatements().size()).isEqualTo(1);
+    st = bs.getStatements().get(0);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    es = (ExpressionStatement)st;
+    assertIdentifier(es.getExpression(), "x");
+    assertThat(ie.getAlternative()).isNull();
+  }
+
+  @Test
+  public void testIfElseExpression() {
+    String input = "if (x < y) { x } else { y }";
+    Parser p = new Parser(new Lexer(input));
+
+    Program program = p.parseProgram();
+    assertThat(p.getErrors()).isEmpty();
+
+    Statement st = extractTheOnlyOneStatement(program);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    ExpressionStatement es = (ExpressionStatement)st;
+    assertThat(es.getExpression()).isInstanceOf(IfExpression.class);
+    IfExpression ie = (IfExpression)es.getExpression();
+    assertInfixExpression(ie.getCondition(), "x", "<", "y");
+    BlockStatement bs = ie.getConsequence();
+    assertThat(bs.getStatements().size()).isEqualTo(1);
+    st = bs.getStatements().get(0);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    es = (ExpressionStatement)st;
+    assertIdentifier(es.getExpression(), "x");
+    bs = ie.getAlternative();
+    assertThat(bs.getStatements().size()).isEqualTo(1);
+    st = bs.getStatements().get(0);
+    assertThat(st).isInstanceOf(ExpressionStatement.class);
+    es = (ExpressionStatement)st;
+    assertIdentifier(es.getExpression(), "y");
+  }
+
   private void assertInfixExpression(Expression exp, Object left, String operator, Object right) {
     assertThat(exp).isInstanceOf(InfixExpression.class);
     InfixExpression ie = (InfixExpression)exp;
@@ -208,32 +305,12 @@ public class TestParser {
     }
   }
 
-  private void assertBool(Expression exp, Boolean value) {
-    assertThat(exp).isInstanceOf(Bool.class);
-    Bool b = (Bool)exp;
+  @Test
+  public void testFunctionLiteral() { // Not a real test
+    String input = "fn(x, y) { x + y; }";
+    Parser p = new Parser(new Lexer(input));
 
-    assertThat(b.tokenLiteral()).isEqualTo(Boolean.toString(value));
-    assertThat(b.getValue()).isEqualTo(value);
-  }
-
-  private void assertIntegerLiteral(Expression exp, Long value) {
-    assertThat(exp).isInstanceOf(IntegerLiteral.class);
-    IntegerLiteral il = (IntegerLiteral)exp;
-
-    assertThat(il.tokenLiteral()).isEqualTo(Long.toString(value));
-    assertThat(il.getValue()).isEqualTo(value);
-  }
-
-  private void assertIdentifier(Expression exp, String value) {
-    assertThat(exp).isInstanceOf(Identifier.class);
-    Identifier id = (Identifier)exp;
-
-    assertThat(id.tokenLiteral()).isEqualTo(value);
-    assertThat(id.getValue()).isEqualTo(value);
-  }
-
-  private Statement extractTheOnlyOneStatement(Program p) {
-    assertThat(p.getStatements().size()).isEqualTo(1);
-    return p.getStatements().get(0);
+    Program program = p.parseProgram();
+    assertThat(p.getErrors()).isEmpty();
   }
 }

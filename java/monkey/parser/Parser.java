@@ -22,6 +22,9 @@ import monkey.ast.IntegerLiteral;
 import monkey.ast.PrefixExpression;
 import monkey.ast.InfixExpression;
 import monkey.ast.Bool;
+import monkey.ast.IfExpression;
+import monkey.ast.BlockStatement;
+import monkey.ast.FunctionLiteral;
 
 public class Parser {
   private Lexer lexer;
@@ -44,6 +47,8 @@ public class Parser {
     registerPrefix(Token.Type.TRUE, this::parseBool);
     registerPrefix(Token.Type.FALSE, this::parseBool);
     registerPrefix(Token.Type.LPAREN, this::parseGroupedExpression);
+    registerPrefix(Token.Type.IF, this::parseIfExpression);
+    registerPrefix(Token.Type.FUNCTION, this::parseFunctionLiteral);
 
     infixParseFns = new HashMap<>();
     registerInfix(Token.Type.PLUS, this::parseInfixExpression);
@@ -57,8 +62,94 @@ public class Parser {
     errors = new ArrayList<>();
   }
 
-  private Expression parseGroupedExpression() {
+  private Expression parseFunctionLiteral() {
+    Token token = curToken;
+
+    if (!expectPeek(Token.Type.LPAREN)) {
+      return null;
+    }
+
+    List<Identifier> parameters = parseFunctionParameters();
+
+    if (!expectPeek(Token.Type.LBRACE)) {
+      return null;
+    }
+
+    BlockStatement body = parseBlockStatement();
+
+    return new FunctionLiteral(token, parameters, body);
+  }
+
+  private List<Identifier> parseFunctionParameters() {
+    List<Identifier> identifiers = new ArrayList<>();
+
+    if (peekTokenIs(Token.Type.RPAREN)) {
+      nextToken();
+      return identifiers;
+    }
+
     nextToken();
+    identifiers.add((Identifier)parseIdentifier());
+
+    while (peekTokenIs(Token.Type.COMMA)) {
+      nextToken();
+      nextToken();
+      identifiers.add((Identifier)parseIdentifier());
+    }
+
+    if (!expectPeek(Token.Type.RPAREN)) {
+      return null;
+    }
+
+    return identifiers;
+  }
+
+  private Expression parseIfExpression() {
+    Token token = curToken;
+
+    if (!expectPeek(Token.Type.LPAREN)) {
+      return null;
+    }
+    nextToken(); // Eat (
+    Expression condition = parseExpression(Precedence.LOWEST);
+    if (!expectPeek(Token.Type.RPAREN)) {
+      return null;
+    }
+    if (!expectPeek(Token.Type.LBRACE)) {
+      return null;
+    }
+    BlockStatement consequence = parseBlockStatement();
+
+    BlockStatement alternative = null;
+    if (peekTokenIs(Token.Type.ELSE)) {
+      nextToken();
+      if (!expectPeek(Token.Type.LBRACE)) {
+        return null;
+      }
+      alternative = parseBlockStatement();
+    }
+
+    return new IfExpression(token, condition, consequence, alternative);
+  }
+
+  private BlockStatement parseBlockStatement() {
+    Token token = curToken;
+    List<Statement> statements = new ArrayList<>();
+
+    nextToken(); // Eat {
+    while (!curTokenIs(Token.Type.RBRACE)) {
+      Statement st = parseStatement();
+      if (st != null) {
+        statements.add(st);
+      }
+      nextToken();
+    }
+
+    return new BlockStatement(token, statements);
+  }
+
+  private Expression parseGroupedExpression() {
+    nextToken(); // Eat (
     Expression e = parseExpression(Precedence.LOWEST);
 
     if (!expectPeek(Token.Type.RPAREN)) {
