@@ -10,8 +10,9 @@ import monkey.ast.IntegerLiteral;
 import monkey.ast.BoolLiteral;
 import monkey.ast.PrefixExpression;
 import monkey.ast.InfixExpression;
+import monkey.ast.BlockStatement;
+import monkey.ast.IfExpression;
 import monkey.object.Obj;
-import monkey.object.Obj.Type;
 import monkey.object.Int;
 import monkey.object.Bool;
 import monkey.object.Nil;
@@ -43,8 +44,30 @@ public class Evaluator {
       Obj left = eval(ie.getLeft());
       Obj right = eval(ie.getRight());
       return evalInfixExpression(ie.getOperator(), left, right);
+    } else if (node instanceof BlockStatement) {
+      BlockStatement bs = (BlockStatement)node;
+      return evalStatements(bs.getStatements());
+    } else if (node instanceof IfExpression) {
+      IfExpression ie = (IfExpression)node;
+      return evalIfExpression(ie);
     }
     return NIL;
+  }
+
+  private static Obj evalIfExpression(IfExpression ie) {
+    Obj condition = eval(ie.getCondition());
+
+    if (isTruthy(condition)) {
+      return eval(ie.getConsequence());
+    } else if (ie.getAlternative() != null) {
+      return eval(ie.getAlternative());
+    } else {
+      return NIL;
+    }
+  }
+
+  private static boolean isTruthy(Obj obj) {
+    return !(obj == NIL || obj == FALSE);
   }
 
   private static Obj evalInfixExpression(String operator, Obj left, Obj right) {
