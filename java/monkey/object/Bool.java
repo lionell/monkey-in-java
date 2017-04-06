@@ -15,7 +15,7 @@ public class Bool implements Obj {
   }
 
   @Override
-  public String inspect() {
+  public String toString() {
     return Boolean.toString(value);
   }
 }

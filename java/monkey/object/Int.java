@@ -9,13 +9,17 @@ public class Int implements Obj {
     this.value = value;
   }
 
+  public long getValue() {
+    return value;
+  }
+
   @Override
   public Type type() {
     return Type.INT;
   }
 
   @Override
-  public String inspect() {
+  public String toString() {
     return Long.toString(value);
   }
 }

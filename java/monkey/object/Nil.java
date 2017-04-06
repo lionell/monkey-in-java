@@ -9,7 +9,7 @@ public class Nil implements Obj {
   }
 
   @Override
-  public String inspect() {
+  public String toString() {
     return "nil";
   }
 }

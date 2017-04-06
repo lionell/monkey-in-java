@@ -6,9 +6,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import monkey.ast.Program;
 import monkey.lexer.Lexer;
 import monkey.parser.Parser;
-import monkey.ast.Program;
+import monkey.object.Obj;
+import monkey.evaluator.Evaluator;
 
 public class Repl {
   private static final String PROMPT = ">> ";
@@ -31,9 +33,14 @@ public class Repl {
         Program program = p.parseProgram();
         if (!p.getErrors().isEmpty()) {
           printParseErrors(out, p.getErrors());
+          continue;
         }
-        out.write(program.toString());
-        out.write("\n");
+
+        Obj result = Evaluator.eval(program);
+        if (result != null) {
+          out.write(result.toString());
+          out.write("\n");
+        }
       }
     }
   }

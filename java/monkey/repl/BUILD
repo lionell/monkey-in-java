@@ -7,5 +7,7 @@ java_library(
         "//java/monkey/lexer",
         "//java/monkey/parser",
         "//java/monkey/ast",
+        "//java/monkey/evaluator",
+        "//java/monkey/object",
     ],
 )
