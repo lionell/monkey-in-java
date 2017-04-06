@@ -12,10 +12,12 @@ import monkey.ast.PrefixExpression;
 import monkey.ast.InfixExpression;
 import monkey.ast.BlockStatement;
 import monkey.ast.IfExpression;
+import monkey.ast.ReturnStatement;
 import monkey.object.Obj;
 import monkey.object.Int;
 import monkey.object.Bool;
 import monkey.object.Nil;
+import monkey.object.ReturnValue;
 
 public class Evaluator {
   private static Bool TRUE = new Bool(true);
@@ -25,7 +27,7 @@ public class Evaluator {
   public static Obj eval(Node node) {
     if (node instanceof Program) {
       Program p = (Program)node;
-      return evalStatements(p.getStatements());
+      return evalProgram(p);
     } else if (node instanceof ExpressionStatement) {
       ExpressionStatement es = (ExpressionStatement)node;
       return eval(es.getExpression());
@@ -46,10 +48,14 @@ public class Evaluator {
       return evalInfixExpression(ie.getOperator(), left, right);
     } else if (node instanceof BlockStatement) {
       BlockStatement bs = (BlockStatement)node;
-      return evalStatements(bs.getStatements());
+      return evalBlockStatement(bs);
     } else if (node instanceof IfExpression) {
       IfExpression ie = (IfExpression)node;
       return evalIfExpression(ie);
+    } else if (node instanceof ReturnStatement) {
+      ReturnStatement rs = (ReturnStatement)node;
+      Obj value = eval(rs.getValue());
+      return new ReturnValue(value);
     }
     return NIL;
   }
@@ -137,10 +143,25 @@ public class Evaluator {
     }
   }
 
-  private static Obj evalStatements(List<Statement> statements) {
-    Obj result = NIL;
-    for (Statement st : statements) {
+  private static Obj evalProgram(Program p) {
+    Obj result = null;
+    for (Statement st : p.getStatements()) {
       result = eval(st);
+      if (result instanceof ReturnValue) {
+        ReturnValue rv = (ReturnValue)result;
+        return rv.getValue();
+      }
+    }
+    return result;
+  }
+
+  private static Obj evalBlockStatement(BlockStatement bs) {
+    Obj result = null;
+    for (Statement st : bs.getStatements()) {
+      result = eval(st);
+      if (result instanceof ReturnValue) {
+        return result;
+      }
     }
     return result;
   }

@@ -11,6 +11,10 @@ public class ReturnStatement implements Statement {
     this.value = value;
   }
 
+  public Expression getValue() {
+    return value;
+  }
+
   @Override
   public String tokenLiteral() {
     return token.getLiteral();
