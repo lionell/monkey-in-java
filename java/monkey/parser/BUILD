@@ -10,4 +10,3 @@ java_library(
         "//third_party:guava",
     ],
 )
-
