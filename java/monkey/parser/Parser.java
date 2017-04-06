@@ -25,6 +25,7 @@ import monkey.ast.Bool;
 import monkey.ast.IfExpression;
 import monkey.ast.BlockStatement;
 import monkey.ast.FunctionLiteral;
+import monkey.ast.CallExpression;
 
 public class Parser {
   private Lexer lexer;
@@ -59,7 +60,39 @@ public class Parser {
     registerInfix(Token.Type.NOT_EQ, this::parseInfixExpression);
     registerInfix(Token.Type.LT, this::parseInfixExpression);
     registerInfix(Token.Type.GT, this::parseInfixExpression);
+    registerInfix(Token.Type.LPAREN, this::parseCallExpression);
     errors = new ArrayList<>();
+  }
+
+  private Expression parseCallExpression(Expression function) {
+    Token token = curToken;
+    List<Expression> arguments = parseCallArguments();
+
+    return new CallExpression(curToken, function, arguments);
+  }
+
+  private List<Expression> parseCallArguments() {
+    List<Expression> args = new ArrayList<>();
+
+    if (peekTokenIs(Token.Type.RPAREN)) {
+      nextToken();
+      return args;
+    }
+
+    nextToken();
+    args.add(parseExpression(Precedence.LOWEST));
+
+    while (peekTokenIs(Token.Type.COMMA)) {
+      nextToken();
+      nextToken();
+      args.add(parseExpression(Precedence.LOWEST));
+    }
+
+    if (!expectPeek(Token.Type.RPAREN)) {
+      return null;
+    }
+
+    return args;
   }
 
   private Expression parseFunctionLiteral() {
@@ -257,6 +290,7 @@ public class Parser {
     .put(Token.Type.MINUS, Precedence.SUM)
     .put(Token.Type.SLASH, Precedence.PRODUCT)
     .put(Token.Type.ASTERISK, Precedence.PRODUCT)
+    .put(Token.Type.LPAREN, Precedence.CALL)
     .build();
 
   private Precedence peekPrecedence() {
@@ -290,7 +324,7 @@ public class Parser {
     Token token = curToken;
     nextToken(); // Skip return
 
-    Expression value = null; // TODO: Parse value
+    Expression value = parseExpression(Precedence.LOWEST);
 
     while (!curTokenIs(Token.Type.SEMICOLON)) {
       nextToken();
@@ -309,8 +343,9 @@ public class Parser {
     if (!expectPeek(Token.Type.ASSIGN)) {
       return null;
     }
+    nextToken();
 
-    Expression value = null; // TODO: Parse value
+    Expression value = parseExpression(Precedence.LOWEST);
 
     while (!curTokenIs(Token.Type.SEMICOLON)) {
       nextToken();

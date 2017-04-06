@@ -313,4 +313,13 @@ public class TestParser {
     Program program = p.parseProgram();
     assertThat(p.getErrors()).isEmpty();
   }
+
+  @Test
+  public void testCallExpression() { // Not a real test
+    String input = "add(1, 2 * 3, 4 + 5);";
+    Parser p = new Parser(new Lexer(input));
+
+    Program program = p.parseProgram();
+    assertThat(p.getErrors()).isEmpty();
+  }
 }
