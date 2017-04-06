@@ -1,6 +1,6 @@
 # Monkey language in Java
 
-[![Build Status](https://travis-ci.org/lionell/syntax-analyzer.svg?branch=master)](https://travis-ci.org/lionell/syntax-analyzer)
+[![Build Status](https://travis-ci.org/lionell/monkey-in-java.svg?branch=master)](https://travis-ci.org/lionell/monkey-in-java)
 
 <div align="center">
   <img width="300px" src="http://tinyclipart.com/resource/monkey-cartoon/monkey-cartoon-142.jpg" />
