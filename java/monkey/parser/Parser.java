@@ -21,7 +21,7 @@ import monkey.ast.Identifier;
 import monkey.ast.IntegerLiteral;
 import monkey.ast.PrefixExpression;
 import monkey.ast.InfixExpression;
-import monkey.ast.Bool;
+import monkey.ast.BoolLiteral;
 import monkey.ast.IfExpression;
 import monkey.ast.BlockStatement;
 import monkey.ast.FunctionLiteral;
@@ -45,8 +45,8 @@ public class Parser {
     registerPrefix(Token.Type.INT, this::parseIntegerLiteral);
     registerPrefix(Token.Type.BANG, this::parsePrefixExpression);
     registerPrefix(Token.Type.MINUS, this::parsePrefixExpression);
-    registerPrefix(Token.Type.TRUE, this::parseBool);
-    registerPrefix(Token.Type.FALSE, this::parseBool);
+    registerPrefix(Token.Type.TRUE, this::parseBoolLiteral);
+    registerPrefix(Token.Type.FALSE, this::parseBoolLiteral);
     registerPrefix(Token.Type.LPAREN, this::parseGroupedExpression);
     registerPrefix(Token.Type.IF, this::parseIfExpression);
     registerPrefix(Token.Type.FUNCTION, this::parseFunctionLiteral);
@@ -191,8 +191,8 @@ public class Parser {
     return e;
   }
 
-  private Expression parseBool() {
-    return new Bool(curToken, curTokenIs(Token.Type.TRUE));
+  private Expression parseBoolLiteral() {
+    return new BoolLiteral(curToken, curTokenIs(Token.Type.TRUE));
   }
 
   private Expression parseInfixExpression(Expression left) {

@@ -2,11 +2,11 @@ package monkey.ast;
 
 import monkey.token.Token;
 
-public class Bool implements Expression {
+public class BoolLiteral implements Expression {
   private Token token;
   private boolean value;
 
-  public Bool(Token token, boolean value) {
+  public BoolLiteral(Token token, boolean value) {
     this.token = token;
     this.value = value;
   }

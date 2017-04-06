@@ -20,7 +20,7 @@ import monkey.ast.Identifier;
 import monkey.ast.IntegerLiteral;
 import monkey.ast.PrefixExpression;
 import monkey.ast.InfixExpression;
-import monkey.ast.Bool;
+import monkey.ast.BoolLiteral;
 import monkey.ast.IfExpression;
 import monkey.ast.BlockStatement;
 
@@ -137,12 +137,12 @@ public class TestParser {
     assertThat(st).isInstanceOf(ExpressionStatement.class);
     ExpressionStatement es = (ExpressionStatement)st;
 
-    assertBool(es.getExpression(), value);
+    assertBoolLiteral(es.getExpression(), value);
   }
 
-  private void assertBool(Expression exp, Boolean value) {
-    assertThat(exp).isInstanceOf(Bool.class);
-    Bool b = (Bool)exp;
+  private void assertBoolLiteral(Expression exp, Boolean value) {
+    assertThat(exp).isInstanceOf(BoolLiteral.class);
+    BoolLiteral b = (BoolLiteral)exp;
 
     assertThat(b.tokenLiteral()).isEqualTo(Boolean.toString(value));
     assertThat(b.getValue()).isEqualTo(value);
@@ -187,7 +187,7 @@ public class TestParser {
     PrefixExpression pe = (PrefixExpression)es.getExpression();
 
     assertThat(pe.getOperator()).isEqualTo(operator);
-    assertBool(pe.getRight(), right);
+    assertBoolLiteral(pe.getRight(), right);
   }
 
   @Test
@@ -301,7 +301,7 @@ public class TestParser {
     } else if (value instanceof String) {
       assertIdentifier(exp, (String)value);
     } else if (value instanceof Boolean) {
-      assertBool(exp, (Boolean)value);
+      assertBoolLiteral(exp, (Boolean)value);
     }
   }
 
