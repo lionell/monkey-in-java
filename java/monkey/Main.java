@@ -7,9 +7,8 @@ import monkey.repl.Repl;
 
 public class Main {
   public static void main(String[] args) {
-    Repl r = new Repl();
     try {
-      r.start(new InputStreamReader(System.in), new OutputStreamWriter(System.out));
+      Repl.start(new InputStreamReader(System.in), new OutputStreamWriter(System.out));
     } catch (IOException e) {
       e.printStackTrace();
     }

@@ -4,13 +4,21 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import monkey.token.Token;
+import java.util.List;
+
 import monkey.lexer.Lexer;
+import monkey.parser.Parser;
+import monkey.ast.Program;
 
 public class Repl {
   private static final String PROMPT = ">> ";
+  private static final String MONKEY_FACE =
+    "  /~\\ \n" +
+    " C oo \n" +
+    " _( ^) \n" +
+    "/   ~\\ \n";
 
-  public void start(InputStreamReader in, OutputStreamWriter out) throws IOException {
+  public static void start(InputStreamReader in, OutputStreamWriter out) throws IOException {
     try (BufferedReader bs = new BufferedReader(in)) {
       while (true) {
         out.write(PROMPT);
@@ -19,12 +27,24 @@ public class Repl {
         if (line == null) {
           return;
         }
-        Lexer l = new Lexer(line);
-        for (Token t = l.nextToken(); t.getType() != Token.Type.EOF; t = l.nextToken()) {
-          out.write(t.toString());
-          out.write("\n");
+        Parser p = new Parser(new Lexer(line));
+        Program program = p.parseProgram();
+        if (!p.getErrors().isEmpty()) {
+          printParseErrors(out, p.getErrors());
         }
+        out.write(program.toString());
+        out.write("\n");
       }
+    }
+  }
+
+  private static void printParseErrors(OutputStreamWriter out, List<String> errors)
+    throws IOException {
+    out.write(MONKEY_FACE);
+    out.write("Woops! We ran into some monkey business here!\n");
+    out.write(" parser errors:\n");
+    for (String e : errors) {
+      out.write("\t" + e + "\n");
     }
   }
 }
