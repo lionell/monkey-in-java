@@ -1,7 +1,5 @@
 package monkey.object;
 
-import monkey.object.Obj.Type;
-
 public class Int implements Obj {
   private long value;
 
@@ -11,11 +9,6 @@ public class Int implements Obj {
 
   public long getValue() {
     return value;
-  }
-
-  @Override
-  public Type type() {
-    return Type.INT;
   }
 
   @Override
