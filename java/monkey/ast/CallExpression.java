@@ -17,6 +17,14 @@ public class CallExpression implements Expression {
     this.arguments = arguments;
   }
 
+  public Expression getFunction() {
+    return function;
+  }
+
+  public List<Expression> getArguments() {
+    return arguments;
+  }
+
   @Override
   public String tokenLiteral() {
     return token.getLiteral();

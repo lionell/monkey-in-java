@@ -10,6 +10,7 @@ import monkey.ast.Program;
 import monkey.lexer.Lexer;
 import monkey.parser.Parser;
 import monkey.object.Obj;
+import monkey.object.Environment;
 import monkey.evaluator.Evaluator;
 
 public class Repl {
@@ -22,6 +23,7 @@ public class Repl {
 
   public static void start(InputStreamReader in, OutputStreamWriter out) throws IOException {
     try (BufferedReader bs = new BufferedReader(in)) {
+      Environment env = new Environment();
       while (true) {
         out.write(PROMPT);
         out.flush();
@@ -36,7 +38,7 @@ public class Repl {
           continue;
         }
 
-        Obj result = Evaluator.eval(program);
+        Obj result = Evaluator.eval(program, env);
         if (result != null) {
           out.write(result.toString());
           out.write("\n");

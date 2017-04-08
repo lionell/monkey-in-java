@@ -1,20 +1,21 @@
-package monkey.ast;
+package monkey.object;
 
 import java.util.List;
 
 import com.google.common.base.Joiner;
 
-import monkey.token.Token;
+import monkey.ast.Identifier;
+import monkey.ast.BlockStatement;
 
-public class FunctionLiteral implements Expression {
-  private Token token; // Token.Type.FUNCTION
+public class Function implements Obj {
   private List<Identifier> parameters;
   private BlockStatement body;
+  private Environment env;
 
-  public FunctionLiteral(Token token, List<Identifier> parameters, BlockStatement body) {
-    this.token = token;
+  public Function(List<Identifier> parameters, BlockStatement body, Environment env) {
     this.parameters = parameters;
     this.body = body;
+    this.env = env;
   }
 
   public List<Identifier> getParameters() {
@@ -25,9 +26,13 @@ public class FunctionLiteral implements Expression {
     return body;
   }
 
+  public Environment getEnv() {
+    return env;
+  }
+
   @Override
-  public String tokenLiteral() {
-    return token.getLiteral();
+  public String typeName() {
+    return "FUNCTION";
   }
 
   @Override
@@ -35,8 +40,9 @@ public class FunctionLiteral implements Expression {
     StringBuilder sb = new StringBuilder();
     sb.append("fn (");
     sb.append(Joiner.on(", ").join(parameters));
-    sb.append(")");
-    sb.append(body);
+    sb.append(") { ");
+    sb.append(body.toString());
+    sb.append(" }");
     return sb.toString();
   }
 }
