@@ -12,6 +12,11 @@ public class ReturnValue implements Obj {
   }
 
   @Override
+  public String typeName() {
+    return "RETURN";
+  }
+
+  @Override
   public String toString() {
     return value.toString();
   }

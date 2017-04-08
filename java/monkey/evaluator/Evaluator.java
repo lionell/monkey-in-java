@@ -18,6 +18,7 @@ import monkey.object.Int;
 import monkey.object.Bool;
 import monkey.object.Nil;
 import monkey.object.ReturnValue;
+import monkey.object.Except;
 
 public class Evaluator {
   private static Bool TRUE = new Bool(true);
@@ -40,11 +41,20 @@ public class Evaluator {
     } else if (node instanceof PrefixExpression) {
       PrefixExpression pe = (PrefixExpression)node;
       Obj right = eval(pe.getRight());
+      if (right instanceof Except) {
+        return right;
+      }
       return evalPrefixExpression(pe.getOperator(), right);
     } else if (node instanceof InfixExpression) {
       InfixExpression ie = (InfixExpression)node;
       Obj left = eval(ie.getLeft());
+      if (left instanceof Except) {
+        return left;
+      }
       Obj right = eval(ie.getRight());
+      if (right instanceof Except) {
+        return right;
+      }
       return evalInfixExpression(ie.getOperator(), left, right);
     } else if (node instanceof BlockStatement) {
       BlockStatement bs = (BlockStatement)node;
@@ -55,6 +65,9 @@ public class Evaluator {
     } else if (node instanceof ReturnStatement) {
       ReturnStatement rs = (ReturnStatement)node;
       Obj value = eval(rs.getValue());
+      if (value instanceof Except) {
+        return value;
+      }
       return new ReturnValue(value);
     }
     return NIL;
@@ -63,7 +76,9 @@ public class Evaluator {
   private static Obj evalIfExpression(IfExpression ie) {
     Obj condition = eval(ie.getCondition());
 
-    if (isTruthy(condition)) {
+    if (condition instanceof Except) {
+      return condition;
+    } else if (isTruthy(condition)) {
       return eval(ie.getConsequence());
     } else if (ie.getAlternative() != null) {
       return eval(ie.getAlternative());
@@ -83,8 +98,12 @@ public class Evaluator {
       return nativeBool(left == right);
     } else if (operator == "!=") {
       return nativeBool(left != right);
+    } else if (left.getClass() != right.getClass()) {
+      return new Except(String.format("type mistmatch: %s %s %s", left.typeName(), operator,
+            right.typeName()));
     } else {
-      return NIL;
+      return new Except(String.format("unknown operator: %s %s %s", left.typeName(), operator,
+            right.typeName()));
     }
   }
 
@@ -107,7 +126,7 @@ public class Evaluator {
       case "!=":
         return nativeBool(left.getValue() != right.getValue());
       default:
-        return NIL;
+        return new Except(String.format("unknown operator: INT %s INT", operator));
     }
   }
 
@@ -118,13 +137,13 @@ public class Evaluator {
       case "-":
         return evalMinusPrefixOperatorExpression(right);
       default:
-        return NIL;
+        return new Except(String.format("unknown operator: %s%s", operator, right.typeName()));
     }
   }
 
   private static Obj evalMinusPrefixOperatorExpression(Obj right) {
     if (!(right instanceof Int)) {
-      return NIL;
+      return new Except(String.format("unknown operator: -%s", right.typeName()));
     }
 
     Int i = (Int)right;
@@ -150,6 +169,8 @@ public class Evaluator {
       if (result instanceof ReturnValue) {
         ReturnValue rv = (ReturnValue)result;
         return rv.getValue();
+      } else if(result instanceof Except) {
+        return result;
       }
     }
     return result;
@@ -159,7 +180,7 @@ public class Evaluator {
     Obj result = null;
     for (Statement st : bs.getStatements()) {
       result = eval(st);
-      if (result instanceof ReturnValue) {
+      if (result instanceof ReturnValue || result instanceof Except) {
         return result;
       }
     }

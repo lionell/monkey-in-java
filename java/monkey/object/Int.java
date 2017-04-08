@@ -12,6 +12,11 @@ public class Int implements Obj {
   }
 
   @Override
+  public String typeName() {
+    return "INT";
+  }
+
+  @Override
   public String toString() {
     return Long.toString(value);
   }

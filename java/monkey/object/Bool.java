@@ -8,6 +8,11 @@ public class Bool implements Obj {
   }
 
   @Override
+  public String typeName() {
+    return "BOOL";
+  }
+
+  @Override
   public String toString() {
     return Boolean.toString(value);
   }

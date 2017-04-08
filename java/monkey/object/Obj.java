@@ -1,3 +1,5 @@
 package monkey.object;
 
-public interface Obj {}
+public interface Obj {
+  String typeName();
+}
