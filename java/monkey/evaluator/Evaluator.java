@@ -32,7 +32,7 @@ import monkey.object.Function;
 public class Evaluator {
   private static final Bool TRUE = new Bool(true);
   private static final Bool FALSE = new Bool(false);
-  private static final Nil NIL = new Nil();
+  public static final Nil NIL = new Nil();
 
   public static Obj eval(Node node, Environment env) {
     if (node instanceof Program) {
@@ -272,7 +272,7 @@ public class Evaluator {
     return result;
   }
 
-  private static Obj nativeBool(boolean value) {
+  public static Obj nativeBool(boolean value) {
     return value ? TRUE : FALSE;
   }
 }

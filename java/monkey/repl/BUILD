@@ -9,5 +9,6 @@ java_library(
         "//java/monkey/ast",
         "//java/monkey/evaluator",
         "//java/monkey/object",
+        "//third_party:guava",
     ],
 )

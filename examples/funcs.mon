@@ -1,0 +1,7 @@
+let add = fn(a, b) { a + b; };
+let sub = fn(a, b) { return a - b; };
+let applyFunc = fn(a, b, func) { func(a, b); };
+
+applyFunc(2, 3, add)
+  + applyFunc(3, 10, sub)
+  + applyFunc(5, 10, fn(a, b) { a * b })
