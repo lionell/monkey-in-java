@@ -49,7 +49,7 @@ To run this code type `monkey examples/funcs.mon`.
 We are creating function `applyFunc` that takes function as a third parameter, and function that returns function.
 You can also see function-literal that is called at the time of definition.
 
-Having function as first class citizens makes ceating closures super easy. E.g.
+Having function as first class citizens makes creating **closures** super easy. E.g.
 
 ```
 let superSecretCode = 1234;
