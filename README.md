@@ -28,7 +28,7 @@ let fib = fn(n) {
 fib(6)
 ```
 
-You can find this and more examples in `examples` directory. To run this code type: `monkey examples/fib.mon`.
+You can find this and more examples in `examples` directory. To run this code type `monkey examples/fib.mon`.
 
 ## Functions - first class citizens
 
@@ -45,11 +45,11 @@ applyFunc(2, 3, add)
   + applyFunc(5, 10, fn(a, b) { a * b })
 ```
 
-To run this code type: `monkey examples/funcs.mon`.
+To run this code type `monkey examples/funcs.mon`.
 We are creating function `applyFunc` that takes function as a third parameter, and function that returns function.
 You can also see function-literal that is called at the time of definition.
 
-Having function as first class citizens makes ceating closures super easy. Example:
+Having function as first class citizens makes ceating closures super easy. E.g.
 
 ```
 let superSecretCode = 1234;
