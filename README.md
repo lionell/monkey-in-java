@@ -47,7 +47,7 @@ Here will be formal language specification in EBNF.
 <function-call>         ::= <function> "(" <argument-list> ")"
 <function>              ::= <function-literal>
                           | <identifier>
-<function-literal>      ::= "fn (" <parameter-list> ") <block-statement>
+<function-literal>      ::= "fn (" <parameter-list> ")" <block-statement>
 <block-statement>       ::= "{" <statement-list> "}"
 <argument-list>         ::= { <expression> }
 <parameter-list>        ::= { <identifier> }
