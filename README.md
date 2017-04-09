@@ -12,7 +12,7 @@ Here will be formal language specification in EBNF.
 
 ```
 <program>               ::= <statement-list>
-<statement-list>        :: "{" <statement> "}"
+<statement-list>        :: { <statement> }
 <statement>             ::= <let-statement>
                           | <return-statement>
                           | <expression-statement>
