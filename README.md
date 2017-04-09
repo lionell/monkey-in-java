@@ -13,7 +13,7 @@ Just take a look at example below.
 
 ## Example program
 
-We are going to evaluate `n`-th **Fibonacci number**. To do this, we will use recursive approach. It's not efficient
+We are going to evaluate n-th **Fibonacci number**. To do this, we will use recursive approach. It's not efficient
 at all, but it show that we can call function's from themself.
 
 ```
