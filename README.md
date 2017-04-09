@@ -57,7 +57,7 @@ let encrypt = fn(x) { x + superSecretCode; };
 
 let superSecretCode = 4321;
 
-encrypt(17); // Having superSecretCode equals 1234
+encrypt(17); // having superSecretCode equals 1234
 ```
 
 ## Language specification
