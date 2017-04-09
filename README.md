@@ -25,7 +25,7 @@ let fib = fn(n) {
   }
 };
 
-fib(6)
+fib(6);
 ```
 
 You can find this and more examples in `examples` directory. To run this code type `monkey examples/fib.mon`.
@@ -42,7 +42,7 @@ let applyFunc = fn(a, b, func) { func(a, b); };
 
 applyFunc(2, 3, add)
   + applyFunc(3, 10, sub)
-  + applyFunc(5, 10, fn(a, b) { a * b })
+  + applyFunc(5, 10, fn(a, b) { a * b });
 ```
 
 To run this code type `monkey examples/funcs.mon`.
