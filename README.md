@@ -6,6 +6,27 @@
   <img width="300px" src="http://tinyclipart.com/resource/monkey-cartoon/monkey-cartoon-142.jpg" />
 </div>
 
+Monkey is very simple dynamic language. It supports only three different statement types, but can do a lot!
+Just take a look at example below.
+
+## Fibonacci sequence
+We are going to evaluate n-th Fibonacci number. To do this, we will use recursive approach. It's not efficient
+at all, but it show's that we can call function's from themself.
+
+```
+let fib = fn(n) {
+  if (n == 0) { 1 }
+  else {
+    if (n == 1) { 2 }
+    else { fib(n - 1) + fib(n - 2) }
+  }
+};
+
+fib(6)
+```
+
+You can find this and more examples in `examples` directory. To run this code just type: `monkey examples/fib.mon`
+
 ## Language specification
 
 Here will be formal language specification in [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form).
@@ -61,11 +82,16 @@ Here will be formal language specification in [EBNF](https://en.wikipedia.org/wi
 
 ## How to use
 
-To run REPL just type `bazel run //java/monkey`
+Project developed using [Bazel](https://bazel.build/) build system. All examples below are going to use it.
+
+To start REPL just type `bazel run //java/monkey`
 
 To run tests type `bazel test //javatests/monkey/...`
 
 ## Dependencies
+
+These are libraries used to build Monkey language. If you are using prebuilt JAR archieves, you don't need
+them to run Monkey program via interpreter or REPL.
 
 * [Guava](https://github.com/google/guava) (Google common library)
 * [JUnit4](http://junit.org/junit4/) (Popular testing library)
