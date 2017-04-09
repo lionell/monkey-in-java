@@ -6,12 +6,15 @@
   <img width="300px" src="http://tinyclipart.com/resource/monkey-cartoon/monkey-cartoon-142.jpg" />
 </div>
 
-Monkey is very simple dynamic language. It supports only three different statement types, but can do a lot!
+Monkey is very simple dynamic language. It supports only three different statement types,
+but you can do a lot with it!
+
 Just take a look at example below.
 
 ## Fibonacci sequence
+
 We are going to evaluate n-th Fibonacci number. To do this, we will use recursive approach. It's not efficient
-at all, but it show's that we can call function's from themself.
+at all, but it show that we can call function's from themself.
 
 ```
 let fib = fn(n) {
@@ -25,7 +28,37 @@ let fib = fn(n) {
 fib(6)
 ```
 
-You can find this and more examples in `examples` directory. To run this code just type: `monkey examples/fib.mon`
+You can find this and more examples in `examples` directory. To run this code type: `monkey examples/fib.mon`.
+
+## Functions - first class citizens
+
+As you understand from the title functions are first class citizens in Monkey language. It's super powerful feature,
+that can be used to implement many different design patterns, closures, and more.
+
+```
+let add = fn(a, b) { a + b; };
+let sub = fn() { return fn(a, b) { a - b }; }();
+let applyFunc = fn(a, b, func) { func(a, b); };
+
+applyFunc(2, 3, add)
+  + applyFunc(3, 10, sub)
+  + applyFunc(5, 10, fn(a, b) { a * b })
+```
+
+To run this code type: `monkey examples/funcs.mon`.
+We are creating function `applyFunc` that takes function as a third parameter, and function that returns function.
+You can also see function-literal that is called at the time of definition.
+
+Having function as first class citizens makes ceating closures super easy. Example:
+
+```
+let superSecretCode = 1234;
+let encrypt = fn(x) { x + superSecretCode; };
+
+let superSecretCode = 4321;
+
+encrypt(17); // Having superSecretCode equals 1234
+```
 
 ## Language specification
 
