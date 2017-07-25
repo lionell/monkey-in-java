@@ -1,0 +1,12 @@
+let gcd = fn(x, y) {
+  if (x == 0) { y }
+  else {
+    if (y == 0) { x }
+    else {
+      if (x > y) { gcd(x - y, y) }
+      else { gcd(x, y - x) }
+    }
+  }
+};
+
+gcd(21, 14)
