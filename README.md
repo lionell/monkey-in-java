@@ -133,4 +133,4 @@ them to run Monkey program via interpreter or REPL.
 
 ## License
 
-MIT License
+MIT
