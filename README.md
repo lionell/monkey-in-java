@@ -30,7 +30,7 @@ fib(6);
 
 You can find this and more examples in `examples` directory. To run this code type `monkey examples/fib.mon`.
 
-## Functions - first class citizens
+## Functions = first class citizens
 
 As you understand from the title functions are first class citizens in Monkey language. It's super powerful feature,
 that can be used to implement many different design patterns, closures, and more.
